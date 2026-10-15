@@ -1,0 +1,19 @@
+name: pulse
+
+services:
+  pulse-worker:
+    build: .
+    image: pulse-worker:latest
+    container_name: pulse-worker
+    # Pas de "ports:" : un worker n'est jamais appelé de l'extérieur.
+    environment:
+      INTERVAL_SECONDS: 15
+      BATCH_SIZE: 50
+      # Services internes à surveiller (séparés par des virgules), facultatif.
+      # En local, host.docker.internal pointe vers le PC (ex. le Toolbox Service sur le port 3000).
+      TARGETS: http://host.docker.internal:3000/health
+    # Même durcissement que sur la plateforme : lecture seule + /tmp inscriptible
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
